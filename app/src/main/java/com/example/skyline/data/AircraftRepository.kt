@@ -11,5 +11,5 @@ interface AircraftRepository {
 class NetworkAircraftRepository(
     private val aircraftApiService: AircraftApiService
 ) : AircraftRepository {
-    override suspend fun getAircraft(): List<Aircraft> = aircraftApiService.getPhotos()
+    override suspend fun getAircraft(): List<Aircraft> = aircraftApiService.getAircraft()
 }

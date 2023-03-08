@@ -5,5 +5,5 @@ import retrofit2.http.GET
 
 interface AircraftApiService {
     @GET(value = "aircraft")
-    suspend fun getPhotos(): List<Aircraft>
+    suspend fun getAircraft(): List<Aircraft>
 }
