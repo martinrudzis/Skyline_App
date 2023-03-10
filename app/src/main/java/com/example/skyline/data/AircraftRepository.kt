@@ -1,15 +1,34 @@
 package com.example.skyline.data
 
-import com.example.skyline.model.Aircraft
-import com.example.skyline.network.AircraftApiService
+import com.example.skyline.model.AircraftState
+import com.example.skyline.network.OpenSkyApiService
+import kotlinx.serialization.json.*
 
-// Repository for fetching aircraft data from the OpenSky Network API
 interface AircraftRepository {
-    suspend fun getAircraft(): List<Aircraft>
+    suspend fun getAircraftStates(): List<AircraftState>?
 }
 
 class NetworkAircraftRepository(
-    private val aircraftApiService: AircraftApiService
+    private val openSkyApiService: OpenSkyApiService
 ) : AircraftRepository {
-    override suspend fun getAircraft(): List<Aircraft> = aircraftApiService.getAircraft()
+    override suspend fun getAircraftStates(): List<AircraftState>? {
+        val aircraftStatesList = openSkyApiService.getStates().states?.map {
+            AircraftState (
+                icao24 = it[0].toString().removeSurrounding("\"")
+                    .takeUnless { it == "null" },
+                callsign = it[1].toString().removeSurrounding("\"").trimEnd()
+                    .takeUnless { it == "null" },
+                originCountry = it[2].toString().removeSurrounding("\"")
+                    .takeUnless { it == "null" },
+                longitude = it[5].jsonPrimitive.floatOrNull,
+                latitude = it[6].jsonPrimitive.floatOrNull,
+                onGround = it[8].jsonPrimitive.booleanOrNull,
+                velocity = it[9].jsonPrimitive.floatOrNull,
+                trueTrack = it[10].jsonPrimitive.floatOrNull,
+                geoAltitude = it[13].jsonPrimitive.floatOrNull,
+                category = it[17].jsonPrimitive.intOrNull
+            )
+        }
+        return aircraftStatesList
+    }
 }
