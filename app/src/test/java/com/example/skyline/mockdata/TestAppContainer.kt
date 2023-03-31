@@ -1,8 +1,12 @@
 package com.example.skyline.mockdata
 
+import android.content.Context
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.example.skyline.data.AircraftRepository
 import com.example.skyline.data.AppContainer
-import com.example.skyline.data.NetworkAircraftRepository
+import com.example.skyline.data.Repository
+import com.example.skyline.database.FaaDatabaseService
 import com.example.skyline.network.OpenSkyApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -11,7 +15,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 
 
-class TestAppContainer(url: String) : AppContainer {
+class TestAppContainer(url: String, context: Context) : AppContainer {
 
     @OptIn(ExperimentalSerializationApi::class)
     private val retrofit: Retrofit = Retrofit.Builder()
@@ -26,8 +30,16 @@ class TestAppContainer(url: String) : AppContainer {
         retrofit.create(OpenSkyApiService::class.java)
     }
 
-    override val aircraftRepository: AircraftRepository by lazy {
-        NetworkAircraftRepository(retrofitService)
+    private val databaseService: FaaDatabaseService by lazy {
+        Room.databaseBuilder(
+            context.applicationContext,
+            FaaDatabaseService::class.java,
+            "FaaAircraftData-db"
+        ).build()
+    }
+
+    override val aircraftRepository: Repository by lazy {
+        AircraftRepository(retrofitService, databaseService)
     }
 
 }

@@ -1,8 +1,12 @@
 package com.example.skyline.mockdata
 
+import androidx.test.core.app.ApplicationProvider
 import com.example.skyline.model.AircraftState
+import okhttp3.mockwebserver.MockWebServer
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 //val EXPECTED_ICAO24 = null
 //val EXPECTED_CALLSIGN = null
@@ -26,12 +30,13 @@ val EXPECTED_TRUE_TRACK = 276.39F
 val EXPECTED_GEO_ALTITUDE = 1386.84F
 val EXPECTED_CATEGORY = 1
 
+@RunWith(RobolectricTestRunner::class)
 class AircraftStateTest {
 
-    val server = FakeWebServer()
+    val server = FakeWebService()
     val aircraftStates = server.getAircraftStateListFromSimulatedOpenSkyNetworkApi()
     val firstAircraftState: AircraftState = aircraftStates?.get(0) ?: AircraftState(
-        null, null, null, null, null, null,
+        "", null, null, null, null, null,
         null, null, null, null
     )
 
